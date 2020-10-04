@@ -1,0 +1,6 @@
+# Build and data
+/build/
+/data/
+
+# ZCli
+/.zcli-config.json

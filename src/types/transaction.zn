@@ -1,0 +1,17 @@
+//!
+//! The Curve Stableswap client-side transaction.
+//!
+
+use crate::types::token_id::TokenId;
+use crate::types::Address;
+use crate::types::Balance;
+
+///
+/// This entity mirrors transactions signed by Zargo or another Zandbox client.
+///
+pub struct Transaction {
+    sender: Address,
+    recipient: Address,
+    token_id: TokenId,
+    amount: Balance,
+}

@@ -1,0 +1,116 @@
+//!
+//! The Curve Stableswap contract token ID.
+//!
+
+use crate::types::Balance;
+use crate::constants::MAX_TOKEN_PRECISION;
+
+/// 
+/// The token IDs of the Rinkeby testnet.
+/// 
+pub enum TokenId {
+    ETH = 0,
+    USDT = 1,
+    USDC = 2,
+    LINK = 3,
+    TUSD = 4,
+    HT = 5,
+    OMG = 6,
+    TRB = 7,
+    ZRX = 8,
+    BAT = 9,
+    REP = 10,
+    STORJ = 11,
+    NEXO = 12,
+    MCO = 13,
+    KNC = 14,
+    LAMB = 15,
+    GNT = 16,
+    MLTT = 17,
+    NEM = 18,
+
+    Unknown = 255,
+}
+
+impl TokenId {
+    /// 
+    /// Converts a `u8` into token ID.
+    /// 
+    pub fn from_u8(value: u8) -> Self {
+        match value {
+            0 => Self::ETH,
+            1 => Self::USDT,
+            2 => Self::USDC,
+            3 => Self::LINK,
+            4 => Self::TUSD,
+            5 => Self::HT,
+            6 => Self::OMG,
+            7 => Self::TRB,
+            8 => Self::ZRX,
+            9 => Self::BAT,
+            10 => Self::REP,
+            11 => Self::STORJ,
+            12 => Self::NEXO,
+            13 => Self::MCO,
+            14 => Self::KNC,
+            15 => Self::LAMB,
+            16 => Self::GNT,
+            17 => Self::MLTT,
+            18 => Self::NEM,
+
+            another => {
+                // the only to cause panic explicitly
+                assert!(false, "Token ID is unknown");
+
+                // unreachable
+                Self::Unknown
+            }
+        }
+    }
+
+    /// 
+    /// Returns the token precision.
+    /// 
+    pub fn precision(self) -> u8 {
+        match self {
+            Self::ETH => 18,
+            Self::USDT => 6,
+            Self::USDC => 6,
+            Self::LINK => 18,
+            Self::TUSD => 18,
+            Self::HT => 18,
+            Self::OMG => 18,
+            Self::TRB => 18,
+            Self::ZRX => 18,
+            Self::BAT => 18,
+            Self::REP => 18,
+            Self::STORJ => 8,
+            Self::NEXO => 18,
+            Self::MCO => 8,
+            Self::KNC => 18,
+            Self::LAMB => 18,
+            Self::GNT => 18,
+            Self::MLTT => 18,
+            Self::NEM => 0,
+            
+            Self::Unknown => {
+                // the only to cause panic explicitly
+                assert!(false, "Token ID is unknown");
+
+                // unreachable
+                0
+            }
+        }
+    }
+
+    ///
+    /// Returns the multiplier required to equalize the token precisions.
+    ///
+    pub fn magnitude_diff(self) -> Balance {
+        let mut diff: Balance = 1;
+        for i in 0..MAX_TOKEN_PRECISION while i < MAX_TOKEN_PRECISION - self.precision() {
+            diff *= 10 as Balance;
+        }
+        diff
+    }
+}

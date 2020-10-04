@@ -1,0 +1,58 @@
+//!
+//! The swap consequences calculation.
+//!
+
+use crate::types::Balance;
+use crate::types::token_id::TokenId;
+use crate::constants::ZERO;
+use crate::constants::PRECISION;
+use crate::constants::N;
+
+///
+/// The token being withdrawn balance after the swap.
+///
+pub fn after(
+    tokens: [TokenId; N],
+    balances: [Balance; N],
+    amplifier: u64,
+
+    token_x_idx: u8,
+    token_y_idx: u8,
+    after_y: Balance,
+) -> Balance {
+    assert!(token_x_idx != token_y_idx, "Cannot exchange between the same coins");
+
+    let mut balances_p = balances;
+    for i in 0..N {
+        balances_p[i] *= tokens[i].magnitude_diff() * PRECISION;
+    }
+
+    let D = crate::invariant::calculate(balances_p, amplifier);
+    let An: Balance = amplifier * (N as u64);
+
+    let mut c = D;
+    let mut S: Balance = ZERO;
+
+    for i in 0..N {
+        if i == token_x_idx as u8 {
+            let after_y_p = after_y * tokens[token_x_idx].magnitude_diff() * PRECISION;
+            S += after_y_p;
+            c = c * D / (after_y_p * (N as Balance));
+        } else if i != token_y_idx as u8 {
+            S += balances_p[i];
+            c = c * D / (balances_p[i] * (N as Balance));
+        };
+    }
+
+    c = c * D / (An * (N as Balance));
+    let b: Balance = S + D / An;
+
+    let mut y_prev: Balance = ZERO;
+    let mut y: Balance = D;
+    for n in 0..15 while (y > y_prev && y - y_prev > ZERO) || (y <= y_prev && y_prev - y > ZERO) {
+        y_prev = y;
+        y = (y * y + c) / (2 * y + b - D);
+    }
+
+    y / (tokens[token_y_idx].magnitude_diff() * PRECISION)
+}
