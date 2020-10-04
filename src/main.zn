@@ -83,6 +83,9 @@ contract Stableswap {
         let deposit_idx = self.token_position(tx.token_id);
         let withdraw_idx = self.token_position(withdraw_token_id);
 
+        assert!(self.balances[deposit_idx] != 0, "Deposit token balance is zero");
+        assert!(self.balances[withdraw_idx] != 0, "Withdraw token balance is zero");
+
         let old_y = self.balances[withdraw_idx];
 
         let new_x = self.balances[deposit_idx] + tx.amount;
@@ -117,6 +120,9 @@ contract Stableswap {
         let deposit_idx = self.token_position(deposit_token_id);
         let withdraw_idx = self.token_position(withdraw_token_id);
 
+        assert!(self.balances[deposit_idx] != 0, "Deposit token balance is zero");
+        assert!(self.balances[withdraw_idx] != 0, "Withdraw token balance is zero");
+
         let after_withdrawal = self.balances[withdraw_idx] - to_withdraw;
         
         let after_deposit = exchange::after(
@@ -143,6 +149,9 @@ contract Stableswap {
     ) -> Balance {
         let deposit_idx = self.token_position(deposit_token_id);
         let withdraw_idx = self.token_position(withdraw_token_id);
+
+        assert!(self.balances[deposit_idx] != 0, "Deposit token balance is zero");
+        assert!(self.balances[withdraw_idx] != 0, "Withdraw token balance is zero");
 
         let after_deposit = self.balances[deposit_idx] + to_deposit;
         
