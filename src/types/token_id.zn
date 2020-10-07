@@ -60,7 +60,7 @@ impl TokenId {
 
             another => {
                 // the only to cause panic explicitly
-                assert!(false, "Token ID is unknown");
+                require(false, "Token ID is unknown");
 
                 // unreachable
                 Self::Unknown
@@ -95,7 +95,7 @@ impl TokenId {
             
             Self::Unknown => {
                 // the only to cause panic explicitly
-                assert!(false, "Token ID is unknown");
+                require(false, "Token ID is unknown");
 
                 // unreachable
                 0

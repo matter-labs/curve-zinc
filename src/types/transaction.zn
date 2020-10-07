@@ -7,7 +7,7 @@ use crate::types::Address;
 use crate::types::Balance;
 
 ///
-/// This entity mirrors transactions signed by Zargo or another Zandbox client.
+/// This entity mirrors a transaction signed by a client.
 ///
 pub struct Transaction {
     sender: Address,

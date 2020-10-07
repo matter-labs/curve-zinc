@@ -20,7 +20,7 @@ pub fn after(
     token_y_idx: u8,
     after_y: Balance,
 ) -> Balance {
-    assert!(token_x_idx != token_y_idx, "Cannot exchange between the same coins");
+    require(token_x_idx != token_y_idx, "Cannot exchange between the same coins");
 
     let mut balances_p = balances;
     for i in 0..N {
