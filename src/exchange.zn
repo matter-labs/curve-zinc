@@ -5,7 +5,7 @@
 use crate::types::Balance;
 use crate::types::token_id::TokenId;
 use crate::constants::ZERO;
-use crate::constants::PRECISION;
+use crate::constants::PRECISION_MUL;
 use crate::constants::N;
 
 ///
@@ -24,18 +24,21 @@ pub fn after(
 
     let mut balances_p = balances;
     for i in 0..N {
-        balances_p[i] *= tokens[i].magnitude_diff() * PRECISION;
+        balances_p[i] *= tokens[i].magnitude_diff() * PRECISION_MUL;
     }
 
     let D = crate::invariant::calculate(balances_p, amplifier);
     let An: Balance = amplifier * (N as u64);
+
+    let token_x_magnitude_diff = tokens[token_x_idx].magnitude_diff() * PRECISION_MUL;
+    let token_y_magnitude_diff = tokens[token_y_idx].magnitude_diff() * PRECISION_MUL;
 
     let mut c = D;
     let mut S: Balance = ZERO;
 
     for i in 0..N {
         if i == token_x_idx as u8 {
-            let after_y_p = after_y * tokens[token_x_idx].magnitude_diff() * PRECISION;
+            let after_y_p = after_y * token_x_magnitude_diff;
             S += after_y_p;
             c = c * D / (after_y_p * (N as Balance));
         } else if i != token_y_idx as u8 {
@@ -47,12 +50,17 @@ pub fn after(
     c = c * D / (An * (N as Balance));
     let b: Balance = S + D / An;
 
-    let mut y_prev: Balance = ZERO;
-    let mut y: Balance = D;
-    for n in 0..15 while (y > y_prev && y - y_prev > ZERO) || (y <= y_prev && y_prev - y > ZERO) {
-        y_prev = y;
-        y = (y * y + c) / (2 * y + b - D);
+    let mut y = D;
+    let mut y_next = y;
+    let mut y_done = false;
+    for n in 0..15 while !y_done {
+        y_next = (y * y + c) / (2 * y + b - D);
+        if (y > y_next && y - y_next > token_y_magnitude_diff) || (y <= y_next && y_next - y > token_y_magnitude_diff) {
+            y = y_next;
+        } else {
+            y_done = true;
+        };
     }
 
-    y / (tokens[token_y_idx].magnitude_diff() * PRECISION)
+    y / token_y_magnitude_diff
 }

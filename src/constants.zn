@@ -15,7 +15,7 @@ pub const ZERO: Balance = 0;
 /// Balances are multiplied by it during invariant computation,
 /// to avoid division of integers of the same order of magnitude.
 /// 
-pub const PRECISION: Balance = 1E3;
+pub const PRECISION_MUL: Balance = 1E6;
 
 /// 
 /// The maximum known token precision.
