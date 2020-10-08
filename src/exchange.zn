@@ -18,7 +18,7 @@ pub fn after(
 
     token_x_idx: u8,
     token_y_idx: u8,
-    after_y: Balance,
+    after_x: Balance,
 ) -> Balance {
     require(token_x_idx != token_y_idx, "Cannot exchange between the same coins");
 
@@ -30,17 +30,17 @@ pub fn after(
     let D = crate::invariant::calculate(balances_p, amplifier);
     let An: Balance = amplifier * (N as u64);
 
-    let token_x_magnitude_diff = tokens[token_x_idx].magnitude_diff() * PRECISION_MUL;
-    let token_y_magnitude_diff = tokens[token_y_idx].magnitude_diff() * PRECISION_MUL;
+    let x_magnitude_diff = tokens[token_x_idx].magnitude_diff() * PRECISION_MUL;
+    let y_magnitude_diff = tokens[token_y_idx].magnitude_diff() * PRECISION_MUL;
 
     let mut c = D;
     let mut S: Balance = ZERO;
 
     for i in 0..N {
         if i == token_x_idx as u8 {
-            let after_y_p = after_y * token_x_magnitude_diff;
-            S += after_y_p;
-            c = c * D / (after_y_p * (N as Balance));
+            let after_x_p = after_x * x_magnitude_diff;
+            S += after_x_p;
+            c = c * D / (after_x_p * (N as Balance));
         } else if i != token_y_idx as u8 {
             S += balances_p[i];
             c = c * D / (balances_p[i] * (N as Balance));
@@ -55,12 +55,121 @@ pub fn after(
     let mut y_done = false;
     for n in 0..15 while !y_done {
         y_next = (y * y + c) / (2 * y + b - D);
-        if (y > y_next && y - y_next > token_y_magnitude_diff) || (y <= y_next && y_next - y > token_y_magnitude_diff) {
+
+        let is_next =
+            (y > y_next && y - y_next > y_magnitude_diff) ||
+            (y <= y_next && y_next - y > y_magnitude_diff);
+
+        if is_next {
             y = y_next;
         } else {
             y_done = true;
         };
     }
 
-    y / token_y_magnitude_diff
+    y / y_magnitude_diff
+}
+
+#[test]
+fn ok_equal_precision() {
+    let new_y = after(
+        [TokenId::USDT, TokenId::USDC],
+        [1_000 as Balance, 1_000 as Balance],
+        100 as u64,
+
+        0,
+        1,
+        1_050 as Balance,
+    );
+
+    require!(new_y == 950, "The balance after withdrawal does not match the reference");
+}
+
+#[test]
+fn ok_equal_precision_amplified() {
+    let new_y = after(
+        [TokenId::USDT, TokenId::USDC],
+        [1_000_000 as Balance, 1_000_000 as Balance],
+        100 as u64,
+
+        0,
+        1,
+        1_900_000 as Balance,
+    );
+
+    require!(new_y == 130_370, "The balance after withdrawal does not match the reference");
+}
+
+#[test]
+fn ok_different_precision_lesser_bigger() {
+    let new_y = after(
+        [TokenId::USDT, TokenId::TUSD],
+        [1_000_000 as Balance, 1_000_000_000_000_000_000 as Balance],
+        100 as u64,
+
+        0,
+        1,
+        1_050_000 as Balance,
+    );
+
+    require!(new_y == 950_024_800_946_586_013, "The balance after withdrawal does not match the reference");
+}
+
+#[test]
+fn ok_different_precision_lesser_bigger_amplified() {
+    let new_y = after(
+        [TokenId::USDT, TokenId::TUSD],
+        [1_000_000 as Balance, 1_000_000_000_000_000_000 as Balance],
+        100 as u64,
+
+        0,
+        1,
+        1_950_000 as Balance,
+    );
+
+    require!(new_y == 94_351_900_636_131_207, "The balance after withdrawal does not match the reference");
+}
+
+#[test]
+fn ok_different_precision_bigger_lesser() {
+    let new_y = after(
+        [TokenId::TUSD, TokenId::USDT],
+        [1_000_000_000_000_000_000 as Balance, 1_000_000 as Balance],
+        100 as u64,
+
+        0,
+        1,
+        1_050_000_000_000_000_000 as Balance,
+    );
+
+    require!(new_y == 950_024, "The balance after withdrawal does not match the reference");
+}
+
+#[test]
+fn ok_different_precision_bigger_lesser_amplified() {
+    let new_y = after(
+        [TokenId::TUSD, TokenId::USDT],
+        [1_000_000_000_000_000_000 as Balance, 1_000_000 as Balance],
+        100 as u64,
+
+        0,
+        1,
+        1_950_000_000_000_000_000 as Balance,
+    );
+
+    require!(new_y == 94_351, "The balance after withdrawal does not match the reference");
+}
+
+#[test]
+#[should_panic]
+fn error_same_tokens() {
+    after(
+        [TokenId::USDT, TokenId::USDC],
+        [1E3 as Balance, 1E3 as Balance],
+        100 as u64,
+
+        1,
+        1,
+        100 as Balance,
+    );
 }

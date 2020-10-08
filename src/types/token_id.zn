@@ -59,7 +59,7 @@ impl TokenId {
             18 => Self::NEM,
 
             another => {
-                // the only to cause panic explicitly
+                // the only way of panicking explicitly
                 require(false, "Token ID is unknown");
 
                 // unreachable

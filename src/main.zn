@@ -50,7 +50,10 @@ contract Stableswap {
         mut self,
         tx: Transaction,
     ) {
-        require(tx.recipient == self.address, "Transaction recipient is not the contract");
+        require(
+            tx.recipient == self.address,
+            "Transaction recipient is not the contract",
+        );
 
         let deposit_idx = self.token_position(tx.token_id);
             
@@ -58,8 +61,8 @@ contract Stableswap {
     }
 
     ///
-    /// Exchanges the tokens, consuming some of the `tx.token_id` and returning some of the
-    /// `withdraw_token_id` to the client.
+    /// Exchanges the tokens, consuming some of the `tx.token_id` and returning
+    /// some of the `withdraw_token_id` to the client.
     ///
     pub fn swap(
         mut self,
@@ -68,7 +71,10 @@ contract Stableswap {
         withdraw_token_id: TokenId,
         min_withdraw: Balance,
     ) {
-        require(tx.recipient == self.address, "Transaction recipient is not the contract");
+        require(
+            tx.recipient == self.address,
+            "Transaction recipient is not the contract",
+        );
 
         let deposit_idx = self.token_position(tx.token_id);
         let withdraw_idx = self.token_position(withdraw_token_id);
@@ -88,7 +94,10 @@ contract Stableswap {
         );
 
         let old_y = self.balances[withdraw_idx];
-        require(old_y >= min_withdraw + new_y, "Exchange resulted in fewer coins than expected");
+        require(
+            old_y >= min_withdraw + new_y,
+            "Exchange resulted in fewer coins than expected",
+        );
         let withdraw_amount = old_y - new_y;
 
         zksync::transfer(withdraw_address, withdraw_token_id, withdraw_amount);
@@ -171,7 +180,7 @@ contract Stableswap {
             }
         }
 
-        require(found, "Token ID is unknown");
+        require(found, "The token is not being traded in this pool");
 
         position
     }
