@@ -74,12 +74,12 @@ pub fn after(
 fn ok_equal_precision() {
     let new_y = after(
         [TokenId::USDT, TokenId::USDC],
-        [1_000 as Balance, 1_000 as Balance],
+        [1_E3 as Balance, 1_E3 as Balance],
         100 as u64,
 
         0,
         1,
-        1_050 as Balance,
+        1.050_E3 as Balance,
     );
 
     require!(new_y == 950, "The balance after withdrawal does not match the reference");
@@ -89,12 +89,12 @@ fn ok_equal_precision() {
 fn ok_equal_precision_amplified() {
     let new_y = after(
         [TokenId::USDT, TokenId::USDC],
-        [1_000_000 as Balance, 1_000_000 as Balance],
+        [1_E6 as Balance, 1_E6 as Balance],
         100 as u64,
 
         0,
         1,
-        1_900_000 as Balance,
+        1.9_E6 as Balance,
     );
 
     require!(new_y == 130_370, "The balance after withdrawal does not match the reference");
@@ -104,12 +104,12 @@ fn ok_equal_precision_amplified() {
 fn ok_different_precision_lesser_bigger() {
     let new_y = after(
         [TokenId::USDT, TokenId::TUSD],
-        [1_000_000 as Balance, 1_000_000_000_000_000_000 as Balance],
+        [1_E6 as Balance, 1_E18 as Balance],
         100 as u64,
 
         0,
         1,
-        1_050_000 as Balance,
+        1.050_E6 as Balance,
     );
 
     require!(new_y == 950_024_800_946_586_013, "The balance after withdrawal does not match the reference");
@@ -119,12 +119,12 @@ fn ok_different_precision_lesser_bigger() {
 fn ok_different_precision_lesser_bigger_amplified() {
     let new_y = after(
         [TokenId::USDT, TokenId::TUSD],
-        [1_000_000 as Balance, 1_000_000_000_000_000_000 as Balance],
+        [1_E6 as Balance, 1_E18 as Balance],
         100 as u64,
 
         0,
         1,
-        1_950_000 as Balance,
+        1.950_E6 as Balance,
     );
 
     require!(new_y == 94_351_900_636_131_207, "The balance after withdrawal does not match the reference");
@@ -134,12 +134,12 @@ fn ok_different_precision_lesser_bigger_amplified() {
 fn ok_different_precision_bigger_lesser() {
     let new_y = after(
         [TokenId::TUSD, TokenId::USDT],
-        [1_000_000_000_000_000_000 as Balance, 1_000_000 as Balance],
+        [1_E18 as Balance, 1_E6 as Balance],
         100 as u64,
 
         0,
         1,
-        1_050_000_000_000_000_000 as Balance,
+        1.050_E18 as Balance,
     );
 
     require!(new_y == 950_024, "The balance after withdrawal does not match the reference");
@@ -149,12 +149,12 @@ fn ok_different_precision_bigger_lesser() {
 fn ok_different_precision_bigger_lesser_amplified() {
     let new_y = after(
         [TokenId::TUSD, TokenId::USDT],
-        [1_000_000_000_000_000_000 as Balance, 1_000_000 as Balance],
+        [1_E18 as Balance, 1_E6 as Balance],
         100 as u64,
 
         0,
         1,
-        1_950_000_000_000_000_000 as Balance,
+        1.950_E18 as Balance,
     );
 
     require!(new_y == 94_351, "The balance after withdrawal does not match the reference");
