@@ -2,8 +2,7 @@
 //! The Curve Stableswap contract types.
 //!
 
-pub mod token_id;
-pub mod transaction;
+pub mod token_address;
 
 /// 
 /// The ETH address in the unsigned integer form.

@@ -2,7 +2,6 @@
 //! The invariant calculation.
 //!
 
-use crate::types::token_id::TokenId;
 use crate::constants::ZERO;
 use crate::constants::N;
 
