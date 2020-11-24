@@ -1,5 +1,5 @@
 # Build and data
-/build/
+/target/
 /data/
 
 # ZCli
